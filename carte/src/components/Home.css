@@ -1,23 +1,62 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    padding: 20px;
+    color: white;
+}
 
-.card-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+.logo {
+    width: 290px;
+    height: 150px;
+    object-fit: contain;
   }
   
-  .card {
-    width: calc(20% - 20px);
-    margin: 10px;
-    box-sizing: border-box;
-  }
-  
-  .inner-card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
+
+.header .search-bar {
+    width: 200px;
     padding: 10px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+}
+
+.main {
+    position: relative;
+    max-height: 200px;
   }
   
+  .input {
+    max-width: 190px;
+    border: none;
+    border-bottom: solid gray 1px;
+    background: transparent;
+    outline: none;
+    padding: 10px;
+    transition: 0.2s;
+    color: #e8e8e8;
+    font-size: 17px;
+  }
+  
+  .input:focus , .input:valid {
+    border-color: lightblue;
+  }
+  
+  label span {
+    position: absolute;
+    top: 0px;
+    display: block;
+    transition: 0.2s;
+    pointer-events: none;
+    font-size: 25px;
+    color: gray;
+    opacity: 0%;
+  }
+  
+  .input:focus + label span ,.input:valid + label span {
+    color: lightblue;
+    top: -25px;
+    opacity: 100%;
+  }
+  
+  .input:focus + label p ,.input:valid + label p {
+    opacity: 0;
+  }

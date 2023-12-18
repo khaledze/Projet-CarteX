@@ -1,14 +1,19 @@
 require('dotenv').config();
-
 const express = require('express');
 const mysql = require('mysql2/promise');
-
 const app = express();
 const port = process.env.PORT || 3001;
+const cors = require('cors');
+app.use(cors()); 
+
 
 app.use(express.json());
 
 app.get('/cartes', async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 20;
+  const offset = (page - 1) * limit;
+
   try {
     const connection = await mysql.createConnection({
       host: process.env.DB_HOST,
@@ -17,7 +22,7 @@ app.get('/cartes', async (req, res) => {
       database: process.env.DB_DATABASE,
     });
 
-    const [rows] = await connection.query('SELECT * FROM cartes');
+    const [rows] = await connection.query('SELECT * FROM cartes LIMIT ? OFFSET ?', [limit, offset]);
     await connection.end();
 
     res.json(rows);
@@ -26,6 +31,7 @@ app.get('/cartes', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
+
 
 app.get('/cartes/:id', async (req, res) => {
   
