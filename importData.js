@@ -28,12 +28,12 @@ async function insertDataIntoDatabase(cardData) {
           
             await connection.query(`
               INSERT INTO cartes (
-                id, nom, type, frameType, description, race, archetype, ygoprodeck_url,
+                nom, type, frameType, description, race, archetype, ygoprodeck_url,
                 set_name, set_code, set_rarity, set_price, cardmarket_price, tcgplayer_price,
                 ebay_price, amazon_price, coolstuffinc_price, image_url, atk, def, level, attribute
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `, [
-              card.id, card.name, card.type, card.frameType, card.desc, card.race,
+              card.name, card.type, card.frameType, card.desc, card.race,
               card.archetype, card.ygoprodeck_url, setInfo.set_name || null,
               setInfo.set_code || null, setInfo.set_rarity || null,
               setInfo.set_price || null, priceInfo.cardmarket_price || null,
@@ -51,4 +51,5 @@ async function insertDataIntoDatabase(cardData) {
       await connection.end();
     }
 }
+
 fetchDataFromAPI();
