@@ -4,6 +4,7 @@ const mysql = require('mysql2/promise');
 const app = express();
 const port = process.env.PORT || 3001;
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 app.use(cors()); 
 
 
@@ -101,7 +102,30 @@ app.put('/cartes/:id', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
-
+app.post('/api/login', async (req, res) => {
+    const { pseudo, mot_de_passe } = req.body;
+  
+    try {
+      const [rows] = await connection.query('SELECT * FROM utilisateur WHERE pseudo = ?', [pseudo]);
+  
+      if (rows.length === 1) {
+        const hashedPassword = rows[0].mot_de_passe;
+  
+        bcrypt.compare(mot_de_passe, hashedPassword, (err, result) => {
+          if (result) {
+            res.json({ success: true, message: 'Connexion réussie' });
+          } else {
+            res.status(401).json({ success: false, message: 'Identifiants incorrects' });
+          }
+        });
+      } else {
+        res.status(401).json({ success: false, message: 'Identifiants incorrects' });
+      }
+    } catch (error) {
+      console.error('Erreur lors de la connexion :', error);
+      res.status(500).json({ success: false, message: 'Erreur serveur' });
+    }
+  });
 app.listen(port, () => {
   console.log(`Serveur démarré sur http://localhost:${port}`);
 });
