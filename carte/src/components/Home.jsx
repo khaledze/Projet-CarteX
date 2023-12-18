@@ -1,3 +1,6 @@
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Logo from '../img/yu.png';
@@ -12,7 +15,7 @@ export default function Home() {
     const fetchCards = async () => {
       try {
         const res = await axios.get(`http://localhost:3001/cartes?page=${currentPage}&limit=${cardsPerPage}`);
-        console.log("Réponse de l'API:", res.data); // Affiche les données reçues
+        console.log("Réponse de l'API:", res.data); 
         setCards(res.data);
       } catch (error) {
         console.error("Erreur lors de la récupération des cartes", error);
@@ -53,16 +56,33 @@ export default function Home() {
       </header>
       <div className="container">
         <div className="cards-grid">
-          {cards.map(card => {
-            console.log("Carte:", card); // Affiche chaque carte
-            return (
-              <div className="card" key={card.id}>
-                <img src={card.image_url} alt={card.nom} />
-                <h3>{card.nom}</h3>
-                <p>{card.description}</p>
-              </div>
-            );
-          })}
+        {cards.map(card => (
+  <div className="card" key={card.id}>
+    <img src={card.image_url} alt={card.nom} />
+    <h3>{card.nom}</h3>
+    <p>Type: {card.type}</p>
+    <p>Race: {card.race}</p>
+    <p>Set Name: {card.set_name}</p>
+    <p>Set Rarity: {card.set_rarity}</p>
+    
+    {card.type === "Spell Card" ? (
+      <>
+        <p>Frame Type: {card.frameType}</p>
+        <p>Description: {card.description}</p>
+      </>
+    ) : (
+      
+      <>
+        <p>ATK: {card.atk}</p>
+        <p>DEF: {card.def}</p>
+        <p>Level: {card.level}</p>
+        <p>Attribute: {card.attribute}</p>
+      </>
+    )}
+  </div>
+))}
+
+
         </div>
         <div className="pagination">
           <button onClick={handlePreviousClick} disabled={currentPage === 1}>Précédent</button>
