@@ -36,7 +36,7 @@ app.get('/cartes/:id', async (req, res) => {
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
     });
-    const id = req.params;
+    const { id } = req.params;
     const [rows] = await connection.query('SELECT * FROM cartes WHERE id = ?', [id]);
 
     if (rows.length === 0) {
