@@ -1,39 +1,30 @@
-const axios = require('axios');
+require('dotenv').config();
+
+const express = require('express');
 const mysql = require('mysql2/promise');
 
-async function fetchDataFromAPI() {
+const app = express();
+const port = 3001;
+
+app.get('/cartes', async (req, res) => {
   try {
-    const response = await axios.get('https://db.ygoprodeck.com/api/v7/cardinfo.php');
-    const cardData = response.data.data;
-    await insertDataIntoDatabase(cardData);
-  } catch (error) {
-    console.error('Erreur lors de la récupération des données depuis l\'API:', error);
-  }
-}
+    const connection = await mysql.createConnection({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+    });
 
-async function insertDataIntoDatabase(cardData) {
-  const connection = await mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '1Aqzsedrf!',
-    database: 'yugi',
-  });
-
-  try {
-    for (const card of cardData) {
-      await connection.query('INSERT INTO cartes (nom, type, description, image_url) VALUES (?, ?, ?, ?)', [
-        card.name,
-        card.type,
-        card.desc,
-        card.card_images[0].image_url,
-      ]);
-    }
-
-    console.log('Données insérées avec succès dans la base de données.');
-  } catch (error) {
-    console.error('Erreur lors de l\'insertion des données dans la base de données:', error);
-  } finally {
+    const [rows] = await connection.query('SELECT * FROM cartes');
     await connection.end();
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des cartes depuis la base de données:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
   }
-}
-fetchDataFromAPI();
+});
+
+app.listen(port, () => {
+  console.log(`Serveur démarré sur http://localhost:${port}`);
+});
