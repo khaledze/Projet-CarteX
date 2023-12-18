@@ -60,3 +60,24 @@
   .input:focus + label p ,.input:valid + label p {
     opacity: 0;
   }
+
+  .cards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 10px; /* Ajoute un petit espace entre les cartes */
+  }
+  
+  .card {
+    flex: 0 0 calc(25% - 10px); /* Prend 25% de l'espace disponible, moins la marge */
+    margin: 5px; /* Marges pour éviter que les cartes ne se touchent */
+    /* Ajoutez ici d'autres styles pour vos cartes */
+  }
+  
+  /* Assurez-vous que les images s'adaptent bien dans les cartes */
+  .card img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
