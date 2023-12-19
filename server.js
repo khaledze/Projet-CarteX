@@ -14,6 +14,29 @@ app.get('/cartes', async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 20;
   const offset = (page - 1) * limit;
+  const name = req.query.name;
+  const type = req.query.type;
+
+  let query = 'SELECT * FROM cartes';
+  let queryParams = [];
+
+  // Construire la clause WHERE si nécessaire
+  if (name || type) {
+    let whereClauses = [];
+    if (name) {
+      whereClauses.push('nom LIKE ?');
+      queryParams.push(`%${name}%`); // Utiliser LIKE pour une recherche partielle
+    }
+    if (type) {
+      whereClauses.push('type = ?');
+      queryParams.push(type);
+    }
+    query += ' WHERE ' + whereClauses.join(' AND ');
+  }
+
+  // Ajouter la pagination
+  query += ' LIMIT ? OFFSET ?';
+  queryParams.push(limit, offset);
 
   try {
     const connection = await mysql.createConnection({
@@ -23,7 +46,7 @@ app.get('/cartes', async (req, res) => {
       database: process.env.DB_DATABASE,
     });
 
-    const [rows] = await connection.query('SELECT * FROM cartes LIMIT ? OFFSET ?', [limit, offset]);
+    const [rows] = await connection.query(query, queryParams);
     await connection.end();
 
     res.json(rows);
@@ -32,6 +55,7 @@ app.get('/cartes', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
+
 
 
 app.get('/cartes/:id', async (req, res) => {

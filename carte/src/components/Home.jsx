@@ -9,21 +9,31 @@ import './Home.css';
 export default function Home() {
   const [cards, setCards] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('');
   const cardsPerPage = 20;
 
   useEffect(() => {
     const fetchCards = async () => {
       try {
-        const res = await axios.get(`http://localhost:3001/cartes?page=${currentPage}&limit=${cardsPerPage}`);
-        console.log("Réponse de l'API:", res.data); 
+        // Construire l'URL avec les paramètres de recherche et de filtrage
+        const params = new URLSearchParams({
+          page: currentPage,
+          limit: cardsPerPage,
+          name: searchTerm,
+          type: filterType
+        });
+  
+        const res = await axios.get(`http://localhost:3001/cartes?${params.toString()}`);
+        console.log("Réponse de l'API:", res.data);
         setCards(res.data);
       } catch (error) {
         console.error("Erreur lors de la récupération des cartes", error);
       }
     };
-
+  
     fetchCards();
-  }, [currentPage]);
+  }, [currentPage, searchTerm, filterType]);
 
   const handlePreviousClick = () => {
     setCurrentPage(currentPage - 1);
@@ -39,20 +49,25 @@ export default function Home() {
         <div className="logo">
           <img src={Logo} alt="Logo" style={{ width: '100%', height: '100%' }} />
         </div>
-        <div className="main">
-                    <input required type="text" className="input" />
-                    <label>
-                        <span style={{transitionDelay: '0ms', left: '0px'}}>U</span>
-                        <span style={{transitionDelay: '75ms', left: '20px'}}>s</span>
-                        <span style={{transitionDelay: '150ms', left: '33px'}}>e</span>
-                        <span style={{transitionDelay: '225ms', left: '47px'}}>r</span>
-                        <span style={{transitionDelay: '300ms', left: '56px'}}>n</span>
-                        <span style={{transitionDelay: '375ms', left: '72px'}}>a</span>
-                        <span style={{transitionDelay: '450ms', left: '85px'}}>m</span>
-                        <span style={{transitionDelay: '525ms', left: '110px'}}>e</span>
-                        <p style={{position: 'absolute', left: '-8px', top: '-10px', fontSize: '24px', margin: '10px', color: 'gray', transition: '0.5s', pointerEvents: 'none'}}>Username</p>
-                    </label>
-                </div>
+        <div className="search-and-filter">
+        <input
+          type="text"
+          className="input"
+          placeholder="Rechercher par nom..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+        />
+
+        <select
+          value={filterType}
+          onChange={e => setFilterType(e.target.value)}
+        >
+          <option value="">Tous les types</option>
+          <option value="Spell Card">Spell Card</option>
+          <option value="Monster Card">Monster Card</option>
+        
+        </select>
+      </div>
       </header>
       <div className="container">
         <div className="cards-grid">
