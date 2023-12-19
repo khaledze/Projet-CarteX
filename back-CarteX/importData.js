@@ -14,9 +14,9 @@ async function fetchDataFromAPI() {
 async function insertDataIntoDatabase(cardData) {
     const connection = await mysql.createConnection({
       host: 'localhost',
-      user: 'root',
-      password: '1Aqzsedrf!',
-      database: 'yugi',
+      user: 'yugi_root',
+      password: 'password',
+      database: 'yugi_db',
     });
   
     try {

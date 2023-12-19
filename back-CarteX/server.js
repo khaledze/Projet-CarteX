@@ -6,9 +6,42 @@ const port = process.env.PORT || 3001;
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 app.use(cors()); 
-
-
 app.use(express.json());
+
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  port: process.env.DB_PORT
+})
+
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error('Erreur de connexion à la base de données:', err);
+    return;
+  }
+
+  console.log('Connecté à la base de données MySQL');
+
+  // Ici, vous pouvez exécuter vos requêtes SQL
+
+  // Libérez la connexion après usage
+  connection.release();
+});
+
+pool.on('error', (err) => {
+  console.error('Erreur de pool de connexions:', err);
+});
+
+process.on('SIGINT', () => {
+  pool.end((err) => {
+    if (err) {
+      console.error('Erreur lors de la fermeture de la pool de connexions:', err);
+    }
+    process.exit(0);
+  });
+});
 
 app.get('/cartes', async (req, res) => {
   const page = parseInt(req.query.page) || 1;
@@ -16,15 +49,9 @@ app.get('/cartes', async (req, res) => {
   const offset = (page - 1) * limit;
 
   try {
-    const connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-    });
-
+    const connection = await pool.getConnection();
     const [rows] = await connection.query('SELECT * FROM cartes LIMIT ? OFFSET ?', [limit, offset]);
-    await connection.end();
+    connection.release();
 
     res.json(rows);
   } catch (error) {
@@ -35,14 +62,9 @@ app.get('/cartes', async (req, res) => {
 
 
 app.get('/cartes/:id', async (req, res) => {
-  
   try {
-    const connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-    });
+    const connection = await pool.getConnection();
+
     const { id } = req.params;
     const [rows] = await connection.query('SELECT * FROM cartes WHERE id = ?', [id]);
 
@@ -61,15 +83,10 @@ app.delete('/cartes/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-    });
+    const connection = await pool.getConnection();
 
     await connection.query('DELETE FROM cartes WHERE id = ?', [id]);
-    await connection.end();
+    await connection.release();
 
     res.json({ message: 'Carte supprimée avec succès' });
   } catch (error) {
@@ -102,6 +119,7 @@ app.put('/cartes/:id', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
+
 app.post('/api/login', async (req, res) => {
     const { pseudo, mot_de_passe } = req.body;
   
@@ -125,7 +143,8 @@ app.post('/api/login', async (req, res) => {
       console.error('Erreur lors de la connexion :', error);
       res.status(500).json({ success: false, message: 'Erreur serveur' });
     }
-  });
+});
+
 app.listen(port, () => {
   console.log(`Serveur démarré sur http://localhost:${port}`);
 });
