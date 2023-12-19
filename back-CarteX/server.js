@@ -47,6 +47,35 @@ app.get('/cartes', async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 20;
   const offset = (page - 1) * limit;
+  const name = req.query.name;
+  const type = req.query.type;
+
+  let query = 'SELECT * FROM cartes';
+  let queryParams = [];
+
+  // Construire la clause WHERE si nécessaire
+  let whereClauses = [];
+  if (name) {
+    whereClauses.push('nom LIKE ?');
+    queryParams.push(`%${name}%`); // Utiliser LIKE pour une recherche partielle
+  }
+
+  if (type) {
+    if (type === 'Monster Card') {
+      whereClauses.push("type NOT IN ('Spell Card', 'Trap Card')");
+    } else {
+      whereClauses.push('type = ?');
+      queryParams.push(type);
+    }
+  }
+
+  if (whereClauses.length > 0) {
+    query += ' WHERE ' + whereClauses.join(' AND ');
+  }
+
+  // Ajouter la pagination
+  query += ' LIMIT ? OFFSET ?';
+  queryParams.push(limit, offset);
 
   try {
     const connection = await pool.getConnection();
@@ -59,6 +88,7 @@ app.get('/cartes', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
+
 
 
 app.get('/cartes/:id', async (req, res) => {
