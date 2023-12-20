@@ -1,82 +1,202 @@
+.page {
+  background-image: url('../img/hieroglyphs-bg.png'); /* Chemin vers votre image */
+  background-color: #1a1a1a; /* Couleur de fond si l'image ne se charge pas */
+  
+ 
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
 .header {
+  background-color: black;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-top {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: black;
-  padding: 20px;
+}
+
+.header h1 {
+  margin: 0;
   color: white;
 }
 
-.logo {
-  width: 290px;
-  height: 150px;
-  object-fit: contain;
+.search-area {
+  display: flex;
+  align-items: center;
+  
 }
 
+/* Styles pour .input-wrapper, .input-box, et autres restent inchangés */
 
-.header .search-bar {
-  width: 200px;
+.controls-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+  gap: 20px
+}
+
+.input, .filter-select {
   padding: 10px;
+  margin-left: 10px;
+  color: rgb(255, 255, 255);
 }
 
-.main {
-  position: relative;
-  max-height: 200px;
-}
-
-.input {
-  max-width: 190px;
-  border: none;
-  border-bottom: solid gray 1px;
-  background: transparent;
-  outline: none;
-  padding: 10px;
-  transition: 0.2s;
-  color: #e8e8e8;
-  font-size: 17px;
-}
-
-.input:focus , .input:valid {
-  border-color: lightblue;
-}
-
-label span {
-  position: absolute;
-  top: 0px;
-  display: block;
-  transition: 0.2s;
-  pointer-events: none;
-  font-size: 25px;
-  color: gray;
-  opacity: 0%;
-}
-
-.input:focus + label span ,.input:valid + label span {
-  color: lightblue;
-  top: -25px;
-  opacity: 100%;
-}
-
-.input:focus + label p ,.input:valid + label p {
-  opacity: 0;
+.main-content {
+  flex: 1;
+  padding: 20px;
 }
 
 .cards-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  gap: 10px; /* Ajoute un petit espace entre les cartes */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  justify-content: center;
 }
 
 .card {
-  flex: 0 0 calc(25% - 10px); /* Prend 25% de l'espace disponible, moins la marge */
-  margin: 5px; /* Marges pour éviter que les cartes ne se touchent */
-  /* Ajoutez ici d'autres styles pour vos cartes */
+  cursor: pointer;
 }
 
-/* Assurez-vous que les images s'adaptent bien dans les cartes */
 .card img {
   width: 100%;
   height: auto;
   display: block;
+}
+
+
+
+.card-details-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Couleur de fond semi-transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Assurez-vous qu'il s'affiche au-dessus des autres éléments */
+}
+
+.card-details {
+  background-color: rgb(0, 0, 0);
+  padding: 20px;
+  width: 80%;
+  max-width: 800px; /* ou la largeur maximale que vous souhaitez */
+  display: flex;
+  border-radius: 10px;
+}
+
+.card-image {
+  max-width: 40%; /* Ajustez selon la taille de votre image */
+  margin-right: 20px;
+}
+
+
+
+
+.card-info {
+  max-width: 60%;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  padding-top: 20px;
+}
+
+.pagination button {
+  margin: 0 10px;
+}
+
+
+.search-area .input-wrapper {
+  position: relative;
+  width: 100%; /* Ajustez la largeur selon vos besoins */
+  margin: 0 auto; /* Centré avec une marge sur le haut et le bas */
+}
+
+.search-area .input-box {
+  font-size: 16px;
+  padding: 10px 0;
+  border: none;
+  border-bottom: 2px solid #ccc; /* Couleur de la bordure par défaut */
+  color: #08AEEA; /* Couleur du texte dans l'input */
+  width: 100%;
+  background-color: transparent;
+  transition: border-color 0.3s ease-in-out; /* Transition pour l'effet de focus */
+}
+
+.search-area .underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #08AEEA; /* Couleur de l'effet de soulignement */
+  transform: scaleX(0);
+  transition: transform 0.3s ease-in-out; /* Animation de l'effet de soulignement */
+}
+
+.search-area .input-box:focus {
+  border-color: #08AEEA; /* Couleur de la bordure lors du focus */
+  outline: none; /* Enlève le contour par défaut lors du focus */
+}
+
+.search-area .input-box:focus + .underline {
+  transform: scaleX(1); /* Étend le soulignement sur toute la largeur lors du focus */
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #000000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #2f3030;
+}
+
+/* Style des sélecteurs */
+select {
+  padding: 10px;
+  border: 2px solid #353535;
+  border-radius: 5px;
+  background-color: rgb(0, 0, 0);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url('../img/arrow.svg'); /* Assurez-vous que le chemin est correct */
+  background-repeat: no-repeat;
+  background-position: right 15px center; /* Ajustez la position à droite */
+  background-size: 15px 15px; /* Ajustez la taille de l'icône */
+  padding-right: 35px; /* Ajoutez du padding à droite pour éviter que le texte ne soit recouvert */
+}
+
+/* Style pour désactiver l'apparence par défaut dans IE */
+select::-ms-expand {
+  display: none;
 }
